@@ -7,7 +7,7 @@ using namespace std;
 #define distance 7
 #define CONTOUR_LENGTH 250
  
-Mat image, output; 
+Mat image, img_thresh,image_gray; 
 CvMemStorage* storage = cvCreateMemStorage(0); 
 RotatedRect contourcenter;
 vector<vector<Point> > contours;                                                                                                 
@@ -18,34 +18,55 @@ CvMemStorage* fingerstorage = cvCreateMemStorage(0);
 CvSeq* palm = cvCreateSeq(CV_SEQ_ELTYPE_POINT,sizeof(CvSeq),sizeof(CvPoint),palmstorage);
 CvSeq* fingerseq = cvCreateSeq(CV_SEQ_ELTYPE_POINT,sizeof(CvSeq),sizeof(CvPoint),fingerstorage);
  
-  
+
+
 int main()
 {
-    image = imread("hand2.jpg",0); 
-    output.create(image.size(),image.type());
-     
-    if(!image.data){
-        printf("Error: Couldn't open the image file.\n");
+    VideoCapture cap(0);
+
+    if(!cap.isOpened())
+    {
+        cout<<"Error reading frame, Aborting"<<endl;
+        return -1;
     }
-     
-    threshold(image, image, 0, 255, CV_THRESH_BINARY | CV_THRESH_OTSU);
-    erode(image,image,0,Point(-1,-1),1);
-    dilate(image,image,0,Point(-1,-1),1); 
-    //cvShowImage("HelloWorld",image);
-    findContours( image, contours, hierarchy,CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE, Point(0,0) ); 
-    /*while(contours && contours->total <= CONTOUR_LENGTH){  
-      contours = contours->h_next;                                                                
-    } */
-//    drawContours( output, contours, -1,  2, 8, 1,Point(0,0) ); 
-    drawContours( output, contours, -1, CV_RGB(0,255,0), 2, 8, hierarchy, 0, Point(0,0) );
-      contourcenter =  minAreaRect(contours);
-      armcenter.x = cvRound(contourcenter.center.x);
-      armcenter.y = cvRound(contourcenter.center.y);
-      circle(output,armcenter,10,CV_RGB(255,255,255),-1,8,0);
-     
-    imshow("HelloWorld",output); 
-    cvWaitKey(0); 
-    cvDestroyWindow("HelloWorld"); 
+    
+    while(1)
+    {
+        cap >> image ;              // Get a new frame from camera
+        //output.create(image.size(),image.type());
+        
+        cvtColor(image,image_gray,CV_BGR2GRAY);
+        if(!image.data){
+            printf("Error: Couldn't open the image file.\n");
+        }
+         
+        imshow("Image",image);
+        
+        threshold(image_gray, img_thresh, 0, 255, CV_THRESH_BINARY_INV | CV_THRESH_OTSU);
+        imshow("threshold",img_thresh);
+        
+        findContours( img_thresh, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
+
+        int largest_contour_i = 0;
+        int largest_area = 0;
+        int i; 
+        for(i=0;i<contours.size();i++)
+        {
+            double a = contourArea(contours[i]);
+            if(a>largest_area)
+            {
+                largest_area = a;
+                largest_contour_i = i;
+            }
+        }
+        
+        Scalar color (255,255,255);
+        drawContours( image, contours, largest_contour_i, color, 2, 8, hierarchy, 0);
+        imshow( "Result window", image );
+        
+        if( waitKey(20)>=0 )
+            break;
+    } 
     return EXIT_SUCCESS;
 }
  
