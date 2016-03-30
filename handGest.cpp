@@ -94,6 +94,7 @@ int main()
                     //line(image, ptStart, ptFar, Scalar(0, 255, 0), 1);
                     line(image, ptEnd, ptFar, Scalar(0, 255, 0), 1);
                     circle(image, ptFar, 4, Scalar(0, 0, 255), 2);
+                    circle(image, ptEnd, 4, Scalar(255, 0, 0), 2);
                 }
             }
         }
