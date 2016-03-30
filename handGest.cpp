@@ -73,7 +73,8 @@ int main()
             if(contours[i].size() > 3)
                 convexityDefects( contours[i], hullsI[i], defects[i]);
         }
-        Scalar color (255,255,255);
+        Scalar color1 (255,255,255);
+        Scalar color2 (0, 0, 0);
         //drawContours( image, contours, largest_contour_i, color, 2, 8, hierarchy, 0);
         
         /*color = (0, 0, 0);
@@ -88,7 +89,7 @@ int main()
             for(const Vec4i& v : defects[i])
             {
                 float depth = v[3] / 256;
-                if (depth > 10) //  filter defects by depth, e.g more than 10
+                if (depth > 30) //  filter defects by depth, e.g more than 10
                 {
                     int startidx = v[0]; Point ptStart(contours[i][startidx]);
                     int endidx = v[1]; Point ptEnd(contours[i][endidx]);
@@ -96,11 +97,24 @@ int main()
                     
                     diff1 = ptFar.y - ptEnd.y;
                     diff2 = ptFar.x - ptEnd.x;
-                    if (diff1 < 20 || diff2 <20 )
+                    if (diff1 < -10 || diff2 < -25 || depth > 250)
                     {
+                        putText(image, 
+                                to_string(diff1) + ", " + to_string(diff2) + ", " + to_string((int)depth),
+                                ptEnd, FONT_HERSHEY_SIMPLEX, 0.5f, color2);
+                        
+                        line(image, ptEnd, ptFar, Scalar(0, 0, 0), 1);
+                        circle(image, ptFar, 4, Scalar(0, 0, 120), 2);
+                        circle(image, ptEnd, 4, Scalar(120, 0, 0), 2);
                         continue;
                     }
-                    putText(image, to_string(diff1) + ", " + to_string(diff2), ptEnd, FONT_HERSHEY_SIMPLEX, 0.5f, color);
+                    else
+                    {
+                        putText(image, 
+                                to_string(diff1) + ", " + to_string(diff2) + ", " + to_string((int)depth),
+                                ptEnd, FONT_HERSHEY_SIMPLEX, 0.5f, color1 );
+                    
+                    }
                     //cout<< " diff1 = " << diff1 << " diff2 = " << diff2 << endl;
                     //line(image, ptStart, ptEnd, Scalar(0, 255, 0), 1);
                     //line(image, ptStart, ptFar, Scalar(0, 255, 0), 1);
