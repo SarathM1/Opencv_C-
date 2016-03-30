@@ -10,7 +10,8 @@ using namespace std;
 Mat image, img_thresh,image_gray; 
 CvMemStorage* storage = cvCreateMemStorage(0); 
 RotatedRect contourcenter;
-vector<vector<Point> > contours;                                                                                                 
+vector<vector<Point> > contours;         
+vector<Point> cnt;
 vector<Vec4i> hierarchy;
 CvPoint armcenter;
 CvMemStorage* palmstorage = cvCreateMemStorage(0);
@@ -47,6 +48,8 @@ int main()
         
         findContours( img_thresh, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
 
+        cout<< "contours.size = " << contours.size()<< endl;
+
         int largest_contour_i = 0;
         int largest_area = 0;
         int i; 
@@ -59,9 +62,19 @@ int main()
                 largest_contour_i = i;
             }
         }
+        cnt = contours[largest_contour_i];
         
+        vector<vector<Point> >hull( contours.size() );
+        for(int i=0; i<contours.size(); i++)
+        {
+            convexHull( Mat(contours[i]), hull[i], false);
+        }
         Scalar color (255,255,255);
         drawContours( image, contours, largest_contour_i, color, 2, 8, hierarchy, 0);
+        
+        color = (0,0,0);
+        for( int i = 0; i< contours.size(); i++)
+            drawContours( image, hull, largest_contour_i, color, 2, 8, vector<Vec4i>(), 0);
         imshow( "Result window", image );
         
         if( waitKey(20)>=0 )
