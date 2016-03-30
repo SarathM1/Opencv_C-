@@ -52,14 +52,14 @@ void thresh_callback(int, void* )
 
 	/// Find the convex hull object for each contour
 	vector<vector<Point> >hull( contours.size() );
-	for( int i = 0; i < contours.size(); i++ )
+	for( unsigned int i = 0; i < contours.size(); i++ )
 	{  
 		convexHull( Mat(contours[i]), hull[i], false ); 
 	}
 
 	/// Draw contours + hull results
 	Mat drawing = Mat::zeros( threshold_output.size(), CV_8UC3 );
-	for( int i = 0; i< contours.size(); i++ )
+	for( unsigned int i = 0; i< contours.size(); i++ )
 	{
 		Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
 		drawContours( drawing, contours, i, color, 1, 8, vector<Vec4i>(), 0, Point() );
