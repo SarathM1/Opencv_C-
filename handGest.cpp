@@ -48,11 +48,9 @@ int main()
         
         findContours( img_thresh, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
 
-        cout<< "contours.size = " << contours.size()<< endl;
-
         int largest_contour_i = 0;
         int largest_area = 0;
-        int i; 
+        unsigned int i; 
         for(i=0;i<contours.size();i++)
         {
             double a = contourArea(contours[i]);
@@ -65,16 +63,40 @@ int main()
         cnt = contours[largest_contour_i];
         
         vector<vector<Point> >hull( contours.size() );
-        for(int i=0; i<contours.size(); i++)
+        vector<vector<int> >hullsI( contours.size() );
+        vector<vector<Vec4i> >defects( contours.size() );
+        for(i=0; i<contours.size(); i++)
         {
             convexHull( Mat(contours[i]), hull[i], false);
+            convexHull( Mat(contours[i]), hullsI[i], false);
+            if(contours[i].size() > 3)
+                convexityDefects( contours[i], hullsI[i], defects[i]);
         }
         Scalar color (255,255,255);
         drawContours( image, contours, largest_contour_i, color, 2, 8, hierarchy, 0);
         
-        color = (0,0,0);
-        for( int i = 0; i< contours.size(); i++)
+        color = (0, 0, 0);
+        for(i = 0; i< contours.size(); i++)
             drawContours( image, hull, largest_contour_i, color, 2, 8, vector<Vec4i>(), 0);
+        /// Draw convexityDefects
+        for (i = 0; i < contours.size(); ++i)
+        {
+            for(const Vec4i& v : defects[i])
+            {
+                float depth = v[3] / 256;
+                if (depth > 10) //  filter defects by depth, e.g more than 10
+                {
+                    int startidx = v[0]; Point ptStart(contours[i][startidx]);
+                    int endidx = v[1]; Point ptEnd(contours[i][endidx]);
+                    int faridx = v[2]; Point ptFar(contours[i][faridx]);
+
+                    //line(image, ptStart, ptEnd, Scalar(0, 255, 0), 1);
+                    //line(image, ptStart, ptFar, Scalar(0, 255, 0), 1);
+                    line(image, ptEnd, ptFar, Scalar(0, 255, 0), 1);
+                    circle(image, ptFar, 4, Scalar(0, 0, 255), 2);
+                }
+            }
+        }
         imshow( "Result window", image );
         
         if( waitKey(20)>=0 )
