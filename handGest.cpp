@@ -79,6 +79,7 @@ int main()
         for(i = 0; i< contours.size(); i++)
             drawContours( image, hull, largest_contour_i, color, 2, 8, vector<Vec4i>(), 0);
         /// Draw convexityDefects
+        int diff1, diff2;
         for (i = 0; i < contours.size(); ++i)
         {
             for(const Vec4i& v : defects[i])
@@ -89,7 +90,14 @@ int main()
                     int startidx = v[0]; Point ptStart(contours[i][startidx]);
                     int endidx = v[1]; Point ptEnd(contours[i][endidx]);
                     int faridx = v[2]; Point ptFar(contours[i][faridx]);
-
+                    
+                    diff1 = ptFar.y - ptEnd.y;
+                    diff2 = ptFar.x - ptEnd.x;
+                    if (diff1 < 0 || diff2 <0)
+                    {
+                        continue;
+                    }
+                    //cout<< "ptFar = " << ptFar << " ptEnd = " << ptEnd << " diff = " << ptFar.y - ptEnd.y<< endl;
                     //line(image, ptStart, ptEnd, Scalar(0, 255, 0), 1);
                     //line(image, ptStart, ptFar, Scalar(0, 255, 0), 1);
                     line(image, ptEnd, ptFar, Scalar(0, 255, 0), 1);
