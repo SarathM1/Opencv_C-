@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <opencv2/opencv.hpp>
 #include <vector>
+#include <string>
 using namespace cv;
 using namespace std;
 
@@ -73,11 +74,13 @@ int main()
                 convexityDefects( contours[i], hullsI[i], defects[i]);
         }
         Scalar color (255,255,255);
-        drawContours( image, contours, largest_contour_i, color, 2, 8, hierarchy, 0);
+        //drawContours( image, contours, largest_contour_i, color, 2, 8, hierarchy, 0);
         
-        color = (0, 0, 0);
+        /*color = (0, 0, 0);
         for(i = 0; i< contours.size(); i++)
             drawContours( image, hull, largest_contour_i, color, 2, 8, vector<Vec4i>(), 0);
+        */
+
         /// Draw convexityDefects
         int diff1, diff2;
         for (i = 0; i < contours.size(); ++i)
@@ -93,11 +96,12 @@ int main()
                     
                     diff1 = ptFar.y - ptEnd.y;
                     diff2 = ptFar.x - ptEnd.x;
-                    if (diff1 < 0 || diff2 <0)
+                    if (diff1 < 20 || diff2 <20 )
                     {
                         continue;
                     }
-                    //cout<< "ptFar = " << ptFar << " ptEnd = " << ptEnd << " diff = " << ptFar.y - ptEnd.y<< endl;
+                    putText(image, to_string(diff1) + ", " + to_string(diff2), ptEnd, FONT_HERSHEY_SIMPLEX, 0.5f, color);
+                    //cout<< " diff1 = " << diff1 << " diff2 = " << diff2 << endl;
                     //line(image, ptStart, ptEnd, Scalar(0, 255, 0), 1);
                     //line(image, ptStart, ptFar, Scalar(0, 255, 0), 1);
                     line(image, ptEnd, ptFar, Scalar(0, 255, 0), 1);
