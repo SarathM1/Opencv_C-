@@ -83,7 +83,7 @@ int main()
         */
 
         /// Draw convexityDefects
-        int diff1, diff2;
+        int diff1, diff2,cntr = 0;
         for (i = 0; i < contours.size(); ++i)
         {
             for(const Vec4i& v : defects[i])
@@ -104,26 +104,31 @@ int main()
                                 ptEnd, FONT_HERSHEY_SIMPLEX, 0.5f, color2);
                         
                         line(image, ptEnd, ptFar, Scalar(0, 0, 0), 1);
-                        circle(image, ptFar, 4, Scalar(0, 0, 120), 2);
-                        circle(image, ptEnd, 4, Scalar(120, 0, 0), 2);
+                        circle(image, ptFar, 4, Scalar(0, 0, 120), 1);
+                        circle(image, ptEnd, 4, Scalar(120, 0, 0), 1);
                         continue;
                     }
                     else
                     {
+                        cntr++;
                         putText(image, 
                                 to_string(diff1) + ", " + to_string(diff2) + ", " + to_string((int)depth),
                                 ptEnd, FONT_HERSHEY_SIMPLEX, 0.5f, color1 );
+                        //line(image, ptStart, ptEnd, Scalar(0, 255, 0), 1);
+                        //line(image, ptStart, ptFar, Scalar(0, 255, 0), 1);
+                        line(image, ptEnd, ptFar, Scalar(0, 255, 0), 1);
+                        circle(image, ptFar, 4, Scalar(0, 0, 255), 2);
+                        circle(image, ptEnd, 4, Scalar(255, 0, 0), 2);
                     
                     }
-                    //cout<< " diff1 = " << diff1 << " diff2 = " << diff2 << endl;
-                    //line(image, ptStart, ptEnd, Scalar(0, 255, 0), 1);
-                    //line(image, ptStart, ptFar, Scalar(0, 255, 0), 1);
-                    line(image, ptEnd, ptFar, Scalar(0, 255, 0), 1);
-                    circle(image, ptFar, 4, Scalar(0, 0, 255), 2);
-                    circle(image, ptEnd, 4, Scalar(255, 0, 0), 2);
                 }
             }
         }
+
+        putText(image, 
+        "Fingers = " + to_string(cntr+1),
+        Point(100,100), FONT_HERSHEY_SIMPLEX, 1, color1 );
+        
         imshow( "Result window", image );
         
         if( waitKey(20)>=0 )
