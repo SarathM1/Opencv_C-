@@ -26,9 +26,8 @@ int main( int argc, char** argv )
 	blur( src_gray, src_gray, Size(3,3) );
 
 	/// Create Window
-	char* source_window = "Source";
-	namedWindow( source_window, CV_WINDOW_AUTOSIZE );
-	imshow( source_window, src );
+	namedWindow( "Source", CV_WINDOW_AUTOSIZE );
+	imshow( "Source", src );
 
 	createTrackbar( " Threshold:", "Source", &thresh, max_thresh, thresh_callback );
 	thresh_callback( 0, 0 );
